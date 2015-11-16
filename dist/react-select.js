@@ -340,6 +340,7 @@ var Select = _react2['default'].createClass({
 		searchable: _react2['default'].PropTypes.bool, // whether to enable searching feature or not
 		simpleValue: _react2['default'].PropTypes.bool, // pass the value to onChange as a simple value (legacy pre 1.0 mode), defaults to false
 		style: _react2['default'].PropTypes.object, // optional style to apply to the control
+		tabIndex: _react2['default'].PropTypes.string, // optional tab index of the control
 		value: _react2['default'].PropTypes.any, // initial field value
 		valueComponent: _react2['default'].PropTypes.func, // value component to render
 		valueKey: _react2['default'].PropTypes.string, // path of the label value in option objects
@@ -427,6 +428,7 @@ var Select = _react2['default'].createClass({
 
 		// for the non-searchable select, toggle the menu
 		if (!this.props.searchable) {
+			this.focus();
 			return this.setState({
 				isOpen: !this.state.isOpen
 			});
@@ -777,12 +779,16 @@ var Select = _react2['default'].createClass({
 	renderInput: function renderInput(valueArray) {
 		var className = (0, _classnames2['default'])('Select-input', this.props.inputProps.className);
 		if (this.props.disabled || !this.props.searchable) {
-			if (this.props.multi && valueArray.length) return;
-			return _react2['default'].createElement(
-				'div',
-				{ className: className },
-				' '
-			);
+			return _react2['default'].createElement('input', _extends({}, this.props.inputProps, {
+				className: className,
+				tabIndex: this.props.tabIndex,
+				onBlur: this.handleInputBlur,
+				onFocus: this.handleInputFocus,
+				type: 'search',
+				autoComplete: 'off',
+				readOnly: 'true',
+				ref: 'input',
+				style: { border: 0 } }));
 		}
 		return _react2['default'].createElement(_reactInputAutosize2['default'], _extends({}, this.props.inputProps, {
 			className: className,
