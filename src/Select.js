@@ -637,7 +637,7 @@ const Select = React.createClass({
 		return (
 			<div ref="wrapper" className={className} style={this.props.wrapperStyle}>
 				{this.renderHiddenField(valueArray)}
-				<Tappable ref="control" className="Select-control" style={this.props.style} onKeyDown={this.handleKeyDown} onTap={this.handleMouseDown}>
+				<Tappable ref="control" className="Select-control" style={this.props.style} onKeyDown={this.handleKeyDown} onTap={this.handleMouseDown} moveThreshold={10}>
 					{this.renderValue(valueArray, isOpen)}
 					{this.renderInput(valueArray)}
 					{this.renderLoading()}
