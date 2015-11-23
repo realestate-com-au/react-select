@@ -8,6 +8,7 @@ import stripDiacritics from './utils/stripDiacritics';
 import Async from './Async';
 import Option from './Option';
 import Value from './Value';
+import Tappable from 'react-tappable';
 
 function stringifyValue (value) {
 	if (typeof value === 'object') {
@@ -487,7 +488,7 @@ const Select = React.createClass({
 					autoComplete="off"
 					readOnly="true"
 					ref="input"
-					style={{ border: 0 }}/>
+					style={{ border: 0, width: 1 }}/>
 			);
 		}
 		return (
@@ -636,13 +637,13 @@ const Select = React.createClass({
 		return (
 			<div ref="wrapper" className={className} style={this.props.wrapperStyle}>
 				{this.renderHiddenField(valueArray)}
-				<div ref="control" className="Select-control" style={this.props.style} onKeyDown={this.handleKeyDown} onMouseDown={this.handleMouseDown} onTouchEnd={this.handleMouseDown}>
+				<Tappable ref="control" className="Select-control" style={this.props.style} onKeyDown={this.handleKeyDown} onTap={this.handleMouseDown}>
 					{this.renderValue(valueArray, isOpen)}
 					{this.renderInput(valueArray)}
 					{this.renderLoading()}
 					{this.renderClear()}
 					{this.renderArrow()}
-				</div>
+				</Tappable>
 				{isOpen ? (
 					<div ref="menuContainer" className="Select-menu-outer" style={this.props.menuContainerStyle}>
 						<div ref="menu" className="Select-menu" style={this.props.menuStyle} onScroll={this.handleMenuScroll} onMouseDown={this.handleMouseDownOnMenu}>

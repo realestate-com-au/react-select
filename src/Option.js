@@ -1,6 +1,8 @@
 import React from 'react';
 import classNames from 'classnames';
 
+import Tappable from 'react-tappable';
+
 const Option = React.createClass({
 	propTypes: {
 		className: React.PropTypes.string,             // className (based on mouse position)
@@ -47,14 +49,15 @@ const Option = React.createClass({
 				{this.props.children}
 			</div>
 		) : (
-			<div className={className}
+			<Tappable className={className}
 				style={option.style}
+				onTap={this.handleMouseDown}
 				onMouseDown={this.handleMouseDown}
 				onMouseEnter={this.handleMouseEnter}
 				onMouseMove={this.handleMouseMove}
 				title={option.title}>
 				{this.props.children}
-			</div>
+			</Tappable>
 		);
 	}
 });
