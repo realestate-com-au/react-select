@@ -525,7 +525,7 @@ function updateCache(cache, input, data) {
 
 function getFromCache(cache, input) {
 	if (!cache) return;
-	for (var i = 0; i <= input.length; i++) {
+	for (var i = input.length; i >= 0; --i) {
 		var cacheKey = input.slice(0, i);
 		if (cache[cacheKey] && (input === cacheKey || cache[cacheKey].complete)) {
 			return cache[cacheKey];
@@ -535,7 +535,7 @@ function getFromCache(cache, input) {
 
 function thenPromise(promise, callback) {
 	if (!promise || typeof promise.then !== 'function') return;
-	promise.then(function (data) {
+	return promise.then(function (data) {
 		callback(null, data);
 	}, function (err) {
 		callback(err);
@@ -628,7 +628,7 @@ var Async = _react2['default'].createClass({
 			isLoading: true
 		});
 		var responseHandler = this.getResponseHandler(input);
-		thenPromise(this.props.loadOptions(input, responseHandler), responseHandler);
+		return thenPromise(this.props.loadOptions(input, responseHandler), responseHandler);
 	},
 	render: function render() {
 		var noResultsText = this.props.noResultsText;
@@ -821,6 +821,7 @@ var Select = _react2['default'].createClass({
 		labelKey: _react2['default'].PropTypes.string, // path of the label value in option objects
 		matchPos: _react2['default'].PropTypes.string, // (any|start) match the start or entire string when filtering
 		matchProp: _react2['default'].PropTypes.string, // (any|label|value) which option property to filter on
+		menuBuffer: _react2['default'].PropTypes.number, // optional buffer (in px) between the bottom of the viewport and the bottom of the menu
 		menuStyle: _react2['default'].PropTypes.object, // optional style to apply to the menu
 		menuContainerStyle: _react2['default'].PropTypes.object, // optional style to apply to the menu container
 		multi: _react2['default'].PropTypes.bool, // multi-value input
@@ -867,6 +868,7 @@ var Select = _react2['default'].createClass({
 			labelKey: 'label',
 			matchPos: 'any',
 			matchProp: 'any',
+			menuBuffer: 0,
 			multi: false,
 			noResultsText: 'No results found',
 			optionComponent: _Option2['default'],
@@ -906,6 +908,12 @@ var Select = _react2['default'].createClass({
 			var menuRect = menuDOM.getBoundingClientRect();
 			if (focusedRect.bottom > menuRect.bottom || focusedRect.top < menuRect.top) {
 				menuDOM.scrollTop = focusedDOM.offsetTop + focusedDOM.clientHeight - menuDOM.offsetHeight;
+			}
+		}
+		if (this.refs.menuContainer) {
+			var menuContainerRect = this.refs.menuContainer.getBoundingClientRect();
+			if (window.innerHeight < menuContainerRect.bottom + this.props.menuBuffer) {
+				window.scrollTo(0, window.scrollY + menuContainerRect.bottom + this.props.menuBuffer - window.innerHeight);
 			}
 		}
 	},
@@ -1280,16 +1288,13 @@ var Select = _react2['default'].createClass({
 	renderInput: function renderInput(valueArray) {
 		var className = (0, _classnames2['default'])('Select-input', this.props.inputProps.className);
 		if (this.props.disabled || !this.props.searchable) {
-			return _react2['default'].createElement('input', _extends({}, this.props.inputProps, {
+			return _react2['default'].createElement('div', _extends({}, this.props.inputProps, {
 				className: className,
-				tabIndex: this.props.tabIndex,
+				tabIndex: this.props.tabIndex || 0,
 				onBlur: this.handleInputBlur,
 				onFocus: this.handleInputFocus,
-				type: 'search',
-				autoComplete: 'off',
-				readOnly: 'true',
 				ref: 'input',
-				style: { border: 0, width: 1 } }));
+				style: { border: 0, width: 1, display: 'inline-block' } }));
 		}
 		return _react2['default'].createElement(_reactInputAutosize2['default'], _extends({}, this.props.inputProps, {
 			className: className,
@@ -1447,7 +1452,7 @@ var Select = _react2['default'].createClass({
 			this.renderHiddenField(valueArray),
 			_react2['default'].createElement(
 				_reactTappable2['default'],
-				{ ref: 'control', className: 'Select-control', style: this.props.style, onKeyDown: this.handleKeyDown, onTap: this.handleMouseDown },
+				{ ref: 'control', className: 'Select-control', style: this.props.style, onKeyDown: this.handleKeyDown, onTap: this.handleMouseDown, moveThreshold: 10 },
 				this.renderValue(valueArray, isOpen),
 				this.renderInput(valueArray),
 				this.renderLoading(),
