@@ -554,7 +554,8 @@ var Async = _react2['default'].createClass({
 		loadingPlaceholder: _react2['default'].PropTypes.string, // replaces the placeholder while options are loading
 		minimumInput: _react2['default'].PropTypes.number, // the minimum number of characters that trigger loadOptions
 		noResultsText: _react2['default'].PropTypes.string, // placeholder displayed when there are no matching search results (shared with Select)
-		placeholder: _react2['default'].PropTypes.string, // field placeholder, displayed when there's no value (shared with Select)
+		placeholder: _react2['default'].PropTypes.oneOfType([// field placeholder, displayed when there's no value (shared with Select)
+		_react2['default'].PropTypes.string, _react2['default'].PropTypes.element]),
 		searchingText: _react2['default'].PropTypes.string, // message to display while options are loading
 		searchPromptText: _react2['default'].PropTypes.string },
 	// label to prompt for search input
@@ -837,7 +838,8 @@ var Select = _react2['default'].createClass({
 		optionComponent: _react2['default'].PropTypes.func, // option component to render in dropdown
 		optionRenderer: _react2['default'].PropTypes.func, // optionRenderer: function (option) {}
 		options: _react2['default'].PropTypes.array, // array of options
-		placeholder: _react2['default'].PropTypes.string, // field placeholder, displayed when there's no value
+		placeholder: _react2['default'].PropTypes.oneOfType([// field placeholder, displayed when there's no value
+		_react2['default'].PropTypes.string, _react2['default'].PropTypes.element]),
 		searchable: _react2['default'].PropTypes.bool, // whether to enable searching feature or not
 		simpleValue: _react2['default'].PropTypes.bool, // pass the value to onChange as a simple value (legacy pre 1.0 mode), defaults to false
 		style: _react2['default'].PropTypes.object, // optional style to apply to the control
