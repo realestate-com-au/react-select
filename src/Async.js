@@ -54,7 +54,8 @@ const Async = React.createClass({
 		onInputChange: React.PropTypes.func,            // onInputChange handler: function (inputValue) {}
 		placeholder: stringOrNode,                      // field placeholder, displayed when there's no value (shared with Select)
 		searchPromptText: stringOrNode,       // label to prompt for search input
-		searchingText: React.PropTypes.string,          // message to display while options are loading
+		searchingText: stringOrNode,          // message to display while options are loading
+		searchingLabel: stringOrNode,          // message to display while options are loading
 	},
 	getDefaultProps () {
 		return {
@@ -63,7 +64,7 @@ const Async = React.createClass({
 			ignoreCase: true,
 			loadingPlaceholder: 'Loading...',
 			minimumInput: 0,
-			searchingText: 'Searching...',
+			searchingLabel: 'Searching...',
 			searchPromptText: 'Type to search',
 		};
 	},
@@ -78,6 +79,10 @@ const Async = React.createClass({
 		this._lastInput = '';
 	},
 	componentDidMount () {
+		if (this.props.searchingText) {
+			console.warn('searchingText is deprecated and will be removed. Please use searchingLabel');
+		}
+
 		this.loadOptions('');
 	},
 	componentWillReceiveProps (nextProps) {
@@ -137,13 +142,17 @@ const Async = React.createClass({
 		return thenPromise(this.props.loadOptions(input, responseHandler), responseHandler);
 	},
 	render () {
+		let { searchingText } = this.props;
+		let { searchingLabel } = this.props;
+		if (!searchingLabel) searchingLabel =  searchingText;
+
 		let { noResultsText } = this.props;
 		let { isLoading, options } = this.state;
 		if (this.props.isLoading) isLoading = true;
 		let placeholder = isLoading ? this.props.loadingPlaceholder : this.props.placeholder;
 		if (!options.length) {
 			if (this._lastInput.length < this.props.minimumInput) noResultsText = this.props.searchPromptText;
-			if (isLoading) noResultsText = this.props.searchingText;
+			if (isLoading) noResultsText = this.props.searchingLabel;
 		}
 		return (
 			<Select
