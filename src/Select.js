@@ -191,6 +191,13 @@ const Select = React.createClass({
 			this.hasScrolledToOption = false;
 		}
 
+		if (prevState.inputValue !== this.state.inputValue && this.props.onInputChange) {
+			var nextState = this.props.onInputChange(this.state.inputValue);
+			var newInput = (nextState !== undefined) ? nextState : null;
+			if (newInput !== null) {
+				this.setState({ inputValue: newInput });
+			}
+		}
 		if (this._scrollToFocusedOptionOnUpdate && this.refs.focused && this.refs.menu) {
 			this._scrollToFocusedOptionOnUpdate = false;
 			var focusedDOM = ReactDOM.findDOMNode(this.refs.focused);
@@ -360,18 +367,10 @@ const Select = React.createClass({
 	},
 
 	handleInputChange (event) {
-		let newInputValue = event.target.value;
-		if (this.state.inputValue !== event.target.value && this.props.onInputChange) {
-			let nextState = this.props.onInputChange(newInputValue);
-			// Note: != used deliberately here to catch undefined and null
-			if (nextState != null) {
-				newInputValue = '' + nextState;
-			}
-		}
 		this.setState({
 			isOpen: true,
 			isPseudoFocused: false,
-			inputValue: newInputValue
+			inputValue: event.target.value,
 		});
 	},
 
