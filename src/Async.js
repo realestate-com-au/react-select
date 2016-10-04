@@ -66,6 +66,10 @@ export default class Async extends Component {
 		});
 	}
 
+	clearOptions() {
+		this.setState({options: []});
+	}
+
 	loadOptions (inputValue) {
 		const { cache, loadOptions } = this.props;
 
