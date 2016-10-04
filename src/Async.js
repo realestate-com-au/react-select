@@ -8,7 +8,7 @@ const propTypes = {
 	children: React.PropTypes.func.isRequired,       // Child function responsible for creating the inner Select component; (props: Object): PropTypes.element
 	ignoreAccents: React.PropTypes.bool,             // strip diacritics when filtering; defaults to true
 	ignoreCase: React.PropTypes.bool,                // perform case-insensitive filtering; defaults to true
-	loadingPlaceholder: React.PropTypes.oneOfType([  // replaces the placeholder while options are loading 
+	loadingPlaceholder: React.PropTypes.oneOfType([  // replaces the placeholder while options are loading
 		React.PropTypes.string,
 		React.PropTypes.node
 	]),
@@ -22,7 +22,6 @@ const propTypes = {
 		React.PropTypes.string,
 		React.PropTypes.node
 	]),
-	clearOptionsOnSelect: React.PropTypes.bool,      // after selecting an option, clear the input and the menu options
 };
 
 const defaultProps = {
@@ -34,7 +33,6 @@ const defaultProps = {
 	loadingPlaceholder: 'Loading...',
 	options: [],
 	searchPromptText: 'Type to search',
-	clearOptionsOnSelect: false,
 };
 
 export default class Async extends Component {
@@ -148,17 +146,14 @@ export default class Async extends Component {
 			noResultsText: isLoading ? loadingPlaceholder : searchPromptText,
 			placeholder: isLoading ? loadingPlaceholder : placeholder,
 			options: isLoading ? [] : options,
-			ref: (ref) => (this.select = ref)
-		};
-
-		if (this.props.clearOptionsOnSelect) {
-			props.onChange = (newValues) => {
+			ref: (ref) => (this.select = ref),
+			onChange: (newValues) => {
 				if (newValues.length > this.props.value.length) {
 					this.clearOptions();
 				}
 				this.props.onChange(newValues);
 			}
-		}
+		};
 
 		return children({
 			...this.props,
