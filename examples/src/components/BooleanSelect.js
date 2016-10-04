@@ -1,19 +1,16 @@
 import React from 'react';
 import Select from 'react-select';
 
-var ValuesAsNumbersField = React.createClass({
-	displayName: 'ValuesAsNumbersField',
+var ValuesAsBooleansField = React.createClass({
+	displayName: 'ValuesAsBooleansField',
 	propTypes: {
 		label: React.PropTypes.string
 	},
 	getInitialState () {
 		return {
 			options: [
-				{ value: 10, label: 'Ten' },
-				{ value: 11, label: 'Eleven' },
-				{ value: 12, label: 'Twelve' },
-				{ value: 23, label: 'Twenty-three' },
-				{ value: 24, label: 'Twenty-four' }
+				{ value: true, label: 'Yes' },
+				{ value: false, label: 'No' }
 			],
 			matchPos: 'any',
 			matchValue: true,
@@ -39,7 +36,7 @@ var ValuesAsNumbersField = React.createClass({
 	},
 	onChange(value) {
 		this.setState({ value });
-		console.log('Numeric Select value changed to', value);
+		console.log('Boolean Select value changed to', value);
 	},
 	onChangeMulti(event) {
 		this.setState({
@@ -84,10 +81,10 @@ var ValuesAsNumbersField = React.createClass({
 						<span className="checkbox-label">Only include matches from the start of the string</span>
 					</label>
 				</div>
-				<div className="hint">This example uses simple numeric values</div>
+				<div className="hint">This example uses simple boolean values</div>
 			</div>
 		);
 	}
 });
 
-module.exports = ValuesAsNumbersField;
+module.exports = ValuesAsBooleansField;
