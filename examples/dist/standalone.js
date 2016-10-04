@@ -45,10 +45,9 @@ var propTypes = {
 	placeholder: _react2['default'].PropTypes.oneOfType([// field placeholder, displayed when there's no value (shared with Select)
 	_react2['default'].PropTypes.string, _react2['default'].PropTypes.node]),
 	searchPromptText: _react2['default'].PropTypes.oneOfType([// label to prompt for search input
-	_react2['default'].PropTypes.string, _react2['default'].PropTypes.node]),
-	clearOptionsOnSelect: _react2['default'].PropTypes.bool };
+	_react2['default'].PropTypes.string, _react2['default'].PropTypes.node])
+};
 
-// after selecting an option, clear the input and the menu options
 var defaultProps = {
 	autoload: true,
 	cache: {},
@@ -57,8 +56,7 @@ var defaultProps = {
 	ignoreCase: true,
 	loadingPlaceholder: 'Loading...',
 	options: [],
-	searchPromptText: 'Type to search',
-	clearOptionsOnSelect: false
+	searchPromptText: 'Type to search'
 };
 
 var Async = (function (_Component) {
@@ -194,17 +192,14 @@ var Async = (function (_Component) {
 				options: isLoading ? [] : options,
 				ref: function ref(_ref) {
 					return _this3.select = _ref;
-				}
-			};
-
-			if (this.props.clearOptionsOnSelect) {
-				props.onChange = function (newValues) {
+				},
+				onChange: function onChange(newValues) {
 					if (newValues.length > _this3.props.value.length) {
 						_this3.clearOptions();
 					}
 					_this3.props.onChange(newValues);
-				};
-			}
+				}
+			};
 
 			return children(_extends({}, this.props, props, {
 				isLoading: isLoading,
