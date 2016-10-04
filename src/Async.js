@@ -22,6 +22,7 @@ const propTypes = {
 		React.PropTypes.string,
 		React.PropTypes.node
 	]),
+	clearOptionsOnSelect: React.PropTypes.bool,      // after selecting an option, clear the input and the menu options
 };
 
 const defaultProps = {
@@ -33,6 +34,7 @@ const defaultProps = {
 	loadingPlaceholder: 'Loading...',
 	options: [],
 	searchPromptText: 'Type to search',
+	clearOptionsOnSelect: false,
 };
 
 export default class Async extends Component {
@@ -148,6 +150,15 @@ export default class Async extends Component {
 			options: isLoading ? [] : options,
 			ref: (ref) => (this.select = ref)
 		};
+
+		if (this.props.clearOptionsOnSelect) {
+			props.onChange = (newValues) => {
+				if (newValues.length > this.props.value.length) {
+					this.clearOptions();
+				}
+				this.props.onChange(newValues);
+			}
+		}
 
 		return children({
 			...this.props,
