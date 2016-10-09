@@ -67,7 +67,7 @@ export default class Async extends Component {
 	}
 
 	clearOptions() {
-		this.setState({options: []});
+		this.setState({ options: [] });
 	}
 
 	loadOptions (inputValue) {
