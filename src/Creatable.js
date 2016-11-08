@@ -153,7 +153,8 @@ const Creatable = React.createClass({
 
 	componentWillUpdate (nextProps, nextState) {
 		// Tricky: Async clears the select inputValue when deleting
-		// an option, but it doesn't fire onInputChange.
+		// an option, but it doesn't fire onInputChange which is
+		// how we normally keep inputValue in sync
 		if (this.props.options !== nextProps.options) {
 			this.inputValue = this.select.state.inputValue;
 		}
