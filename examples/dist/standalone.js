@@ -14,8 +14,6 @@ var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_ag
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
@@ -96,14 +94,11 @@ var Async = (function (_Component) {
 	}, {
 		key: 'componentWillUpdate',
 		value: function componentWillUpdate(nextProps, nextState) {
-			var _this = this;
-
-			var propertiesToSync = ['options'];
-			propertiesToSync.forEach(function (prop) {
-				if (_this.props[prop] !== nextProps[prop]) {
-					_this.setState(_defineProperty({}, prop, nextProps[prop]));
-				}
-			});
+			if (this.props.options !== nextProps.options) {
+				this.setState({
+					options: nextProps.options
+				});
+			}
 		}
 	}, {
 		key: 'clearOptions',
@@ -113,7 +108,7 @@ var Async = (function (_Component) {
 	}, {
 		key: 'loadOptions',
 		value: function loadOptions(inputValue) {
-			var _this2 = this;
+			var _this = this;
 
 			var loadOptions = this.props.loadOptions;
 
@@ -128,8 +123,8 @@ var Async = (function (_Component) {
 			}
 
 			var callback = function callback(error, data) {
-				if (callback === _this2._callback) {
-					_this2._callback = null;
+				if (callback === _this._callback) {
+					_this._callback = null;
 
 					var options = data && data.options || [];
 
@@ -137,7 +132,7 @@ var Async = (function (_Component) {
 						cache[inputValue] = options;
 					}
 
-					_this2.setState({
+					_this.setState({
 						isLoading: false,
 						options: options
 					});
@@ -216,7 +211,7 @@ var Async = (function (_Component) {
 	}, {
 		key: 'render',
 		value: function render() {
-			var _this3 = this;
+			var _this2 = this;
 
 			var _props3 = this.props;
 			var children = _props3.children;
@@ -231,13 +226,13 @@ var Async = (function (_Component) {
 				placeholder: isLoading ? loadingPlaceholder : placeholder,
 				options: isLoading && loadingPlaceholder ? [] : options,
 				ref: function ref(_ref) {
-					return _this3.select = _ref;
+					return _this2.select = _ref;
 				},
 				onChange: function onChange(newValues) {
-					if (_this3.props.value && newValues.length > _this3.props.value.length) {
-						_this3.clearOptions();
+					if (_this2.props.value && newValues.length > _this2.props.value.length) {
+						_this2.clearOptions();
 					}
-					_this3.props.onChange(newValues);
+					_this2.props.onChange(newValues);
 				}
 			};
 
@@ -270,6 +265,8 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
 var _react = (typeof window !== "undefined" ? window['React'] : typeof global !== "undefined" ? global['React'] : null);
 
 var _react2 = _interopRequireDefault(_react);
@@ -287,15 +284,26 @@ var AsyncCreatable = _react2['default'].createClass({
 		return _react2['default'].createElement(
 			_Select2['default'].Async,
 			this.props,
-			function (asyncProps) {
+			function (_ref) {
+				var ref = _ref.ref;
+
+				var asyncProps = _objectWithoutProperties(_ref, ['ref']);
+
+				var asyncRef = ref;
 				return _react2['default'].createElement(
 					_Select2['default'].Creatable,
-					_this.props,
-					function (creatableProps) {
-						return _react2['default'].createElement(_Select2['default'], _extends({}, asyncProps, creatableProps, {
-							onInputChange: function (input) {
-								creatableProps.onInputChange(input);
-								return asyncProps.onInputChange(input);
+					asyncProps,
+					function (_ref2) {
+						var ref = _ref2.ref;
+
+						var creatableProps = _objectWithoutProperties(_ref2, ['ref']);
+
+						var creatableRef = ref;
+						return _this.props.children(_extends({}, creatableProps, {
+							ref: function ref(select) {
+								creatableRef(select);
+								asyncRef(select);
+								_this.select = select;
 							}
 						}));
 					}
@@ -304,6 +312,21 @@ var AsyncCreatable = _react2['default'].createClass({
 		);
 	}
 });
+
+function defaultChildren(props) {
+	return _react2['default'].createElement(_Select2['default'], props);
+};
+
+var propTypes = {
+	children: _react2['default'].PropTypes.func.isRequired };
+
+// Child function responsible for creating the inner Select component; (props: Object): PropTypes.element
+var defaultProps = {
+	children: defaultChildren
+};
+
+AsyncCreatable.propTypes = propTypes;
+AsyncCreatable.defaultProps = defaultProps;
 
 module.exports = AsyncCreatable;
 
@@ -487,9 +510,19 @@ var Creatable = _react2['default'].createClass({
 		}));
 	},
 
+	componentWillUpdate: function componentWillUpdate(nextProps, nextState) {
+		// Tricky: Async clears the select inputValue when deleting
+		// an option, but it doesn't fire onInputChange which is
+		// how we normally keep inputValue in sync
+		if (this.props.options !== nextProps.options) {
+			this.inputValue = this.select.state.inputValue;
+		}
+	},
+
 	onInputChange: function onInputChange(input) {
 		// This value may be needed in between Select mounts (when this.select is null)
 		this.inputValue = input;
+		return this.props.onInputChange && this.props.onInputChange(input);
 	},
 
 	onInputKeyDown: function onInputKeyDown(event) {
@@ -823,6 +856,7 @@ var Select = _react2['default'].createClass({
 		clearAllText: stringOrNode, // title for the "clear" control when multi: true
 		clearValueText: stringOrNode, // title for the "clear" control
 		clearable: _react2['default'].PropTypes.bool, // should it be possible to reset value
+		deleteRemoves: _react2['default'].PropTypes.bool, // whether backspace removes an item if there is no text input
 		delimiter: _react2['default'].PropTypes.string, // delimiter to use to join multiple values for the hidden field value
 		disabled: _react2['default'].PropTypes.bool, // whether the Select is disabled or not
 		escapeClearsValue: _react2['default'].PropTypes.bool, // whether escape clears the value when the menu is closed
@@ -891,6 +925,7 @@ var Select = _react2['default'].createClass({
 			clearable: true,
 			clearAllText: 'Clear all',
 			clearValueText: 'Clear value',
+			deleteRemoves: true,
 			delimiter: ',',
 			disabled: false,
 			escapeClearsValue: true,
@@ -1296,6 +1331,13 @@ var Select = _react2['default'].createClass({
 				}
 				this.focusStartOption();
 				break;
+			case 46:
+				// backspace
+				if (!this.state.inputValue && this.props.deleteRemoves) {
+					event.preventDefault();
+					this.popValue();
+				}
+				return;
 			default:
 				return;
 		}
